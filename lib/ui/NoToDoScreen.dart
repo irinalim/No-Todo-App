@@ -37,6 +37,7 @@ class _NoToDoScreenState extends State<NoToDoScreen> {
                       Animation<double> animation, int index) {
                     return Card(
                       child: ListTile(
+                        onTap: () => _showItem(snapshot.value, snapshot.key),
                         onLongPress: () =>
                             _updateItem(snapshot.value, snapshot.key),
                         leading: Icon(
@@ -141,32 +142,60 @@ class _NoToDoScreenState extends State<NoToDoScreen> {
     databaseReference.child(key).remove();
   }
 
+  _showItem(item, key) {
+    Widget ItemCard = AlertDialog(
+      title: Text("No-todo Item"),
+      content: Container(
+        height: 70,
+        child: Center(
+          child: Text(item["itemName"]),
+        ),
+      ),
+      actions: <Widget>[
+        FlatButton(
+          onPressed: () {
+            Navigator.of(context).pop();
+          },
+          child: Text("Close"),
+        ),
+      ],
+    );
+    showDialog(
+        context: context,
+        builder: (context) {
+          return ItemCard;
+        });
+  }
+
   _updateItem(value, key) {
     var alert = new AlertDialog(
-      title: Text("Update item"),
-      content: Row(
-        children: <Widget>[
-          Expanded(
-            child: Form(
-                key: formKey2,
-                child: Flex(
-                  direction: Axis.vertical,
-                  children: <Widget>[
-                    ListTile(
-                      leading: Icon(Icons.update),
-                      title: TextFormField(
-                        initialValue: value["itemName"],
-                        onSaved: (val) {
-                          debugPrint(val);
-                          noDoItem.itemName = val;
-                        },
-                        validator: (val) => val == "" ? val : null,
-                      ),
-                    )
-                  ],
-                )),
-          )
-        ],
+      title: Text("Update Item"),
+      content: Container(
+        height: 70,
+        child: Row(
+          children: <Widget>[
+            Expanded(
+              child: Form(
+                  key: formKey2,
+                  child: Flex(
+                    direction: Axis.vertical,
+                    children: <Widget>[
+                      ListTile(
+                        leading: Icon(Icons.edit),
+                        title: TextFormField(
+                          initialValue: value["itemName"],
+                          onSaved: (val) {
+                            debugPrint(val);
+                            noDoItem.itemName = val;
+                          },
+                          validator: (val) => val == "" ? val : null,
+                        ),
+                      )
+                    ],
+                  )),
+            ),
+          ],
+        ),
       ),
       actions: <Widget>[
         FlatButton(
